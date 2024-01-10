@@ -43,19 +43,19 @@ public class StaticShader extends AbShader{
     }
 
     private void createMaterialUniform(String name) throws Exception {
-        /*createUniform(uniformName + ".ambient");
-        createUniform(uniformName + ".diffuse");
-        createUniform(uniformName + ".specular");
-        createUniform(uniformName + ".hasTexture");*/
+        super.createUniform(name + ".ambient");
+        super.createUniform(name + ".diffuse");
+        super.createUniform(name + ".specular");
+        super.createUniform(name + ".haveTexture");
         super.createUniform(name + ".reflectance");
         super.createUniform(name + ".reflectancePow");
     }
 
     public void setUniform(String name, Material material){
-        //setUniform(uniformName + ".ambient", material.getAmbientColour());
-        //setUniform(uniformName + ".diffuse", material.getDiffuseColour());
-        //setUniform(uniformName + ".specular", material.getSpecularColour());
-        //setUniform(uniformName + ".hasTexture", material.hasTexture() ? 1 : 0);
+        super.setUniform(name + ".ambient", material.getAmbientColour());
+        super.setUniform(name + ".diffuse", material.getDiffuseColour());
+        super.setUniform(name + ".specular", material.getSpecularColour());
+        super.setUniform(name + ".haveTexture", material.hasTexture() ? 1 : 0);
         super.setUniform(name + ".reflectance", material.getReflectance());
         super.setUniform(name + ".reflectancePow", material.getReflectancePow());
 

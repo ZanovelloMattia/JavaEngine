@@ -52,7 +52,7 @@ public class TestGame implements ILogic {
         terrainModel.setTexture(new Texture(loader.loadTexture("/resources/textures/white.png")), 1f);
 
         Model map = loader.loadOBJModel("/resources/models/cube.obj");
-        map.setTexture(new Texture(loader.loadTexture("/resources/textures/verdeAcqua.png")), 0.2f);
+        //map.setTexture(new Texture(loader.loadTexture("/resources/textures/verdeAcqua.png")), 0.2f);
 
         Model piece = loader.loadOBJModel("/resources/models/cube1.obj");
         piece.setTexture(new Texture(loader.loadTexture("/resources/textures/white.png")), 0.2f);

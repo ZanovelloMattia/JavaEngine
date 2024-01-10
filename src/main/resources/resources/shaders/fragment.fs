@@ -9,11 +9,12 @@ in vec3 fragToCameraVector;
 out vec4 fragColour;
 
 struct Material {
-//vec4 ambient;
-//vec4 diffuse;
-//vec4 specular;
+    vec4 ambient;
+    vec4 diffuse;
+    vec4 specular;
     float reflectance;
     float reflectancePow;
+    int haveTexture;
 };
 
 struct SunLight{
@@ -33,7 +34,7 @@ void main(){
     vec3 nfragToCameraVector = normalize(fragToCameraVector);
 
     vec3 totalDiffuse = vec3(0.0);
-    vec3 totalSpecular = vec3(0.0);
+    vec4 totalSpecular = vec4(0.0);
 
     float minDiffuse;
     int i;
@@ -52,13 +53,22 @@ void main(){
         vec3 reflectedLightDirection = normalize(reflect(lightDirection, nNormal));
         float specularFactor = max(dot(nfragToCameraVector, reflectedLightDirection), 0.0);
         float dumpedSpecularFactor = pow(specularFactor, material.reflectancePow);
-        totalSpecular = totalSpecular + dumpedSpecularFactor * sunlight[i].colour * material.reflectance;
+        totalSpecular = totalSpecular + vec4(dumpedSpecularFactor * sunlight[i].colour * material.reflectance, 1.0);// * material.specular / material.specular * material.ambient / material.ambient * material.diffuse / material.diffuse;
     }
     totalDiffuse = max(totalDiffuse, minDiffuse)/3;
     if(material.reflectance == 0){
-        fragColour = texture(textureSampler, fragTextureCoord) * vec4(totalDiffuse, 1.0);
+        if(material.haveTexture == 1){
+            fragColour = texture(textureSampler, fragTextureCoord) * vec4(totalDiffuse, 1.0);
+        }else {
+            fragColour = vec4(totalDiffuse, 1.0) * material.specular * material.ambient * material.diffuse;
+        }
     }
     else{
-        fragColour = texture(textureSampler, fragTextureCoord) * vec4(totalDiffuse, 1.0) + (vec4(totalSpecular, 1.0));
+        if(material.haveTexture == 1){
+            fragColour = texture(textureSampler, fragTextureCoord) * vec4(totalDiffuse, 1.0) + totalSpecular;
+        }else {
+            fragColour = vec4(totalDiffuse, 1.0) + totalSpecular;
+        }
+
     }
 }

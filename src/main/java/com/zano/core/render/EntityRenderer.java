@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EntityRenderer implements IRenderer{
+public class EntityRenderer implements IRenderer {
 
     private final StaticShader shader;
     private final WindowsManager window;
@@ -46,7 +46,11 @@ public class EntityRenderer implements IRenderer{
         GL20.glEnableVertexAttribArray(1);
         GL20.glEnableVertexAttribArray(2);
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getId());
+        if (model.getMaterial().hasTexture()) {
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getId());
+        } else {
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+        }
     }
 
     @Override
@@ -57,10 +61,10 @@ public class EntityRenderer implements IRenderer{
         GL30.glBindVertexArray(0);
     }
 
-    public void renderLight(List<SunLight> sunLights){
+    public void renderLight(List<SunLight> sunLights) {
         shader.setUniform("sunlight", Consts.MAX_LIGHTS, sunLights);
-        for(int i = 0; i < Consts.MAX_LIGHTS; i++) {
-            if(i < sunLights.size()) {
+        for (int i = 0; i < Consts.MAX_LIGHTS; i++) {
+            if (i < sunLights.size()) {
                 shader.setUniform("lightPosition" + "[" + i + "]", sunLights.get(i).getDirection());
             } else {
                 shader.setUniform("lightPosition" + "[" + i + "]", 0);
@@ -68,14 +72,14 @@ public class EntityRenderer implements IRenderer{
         }
     }
 
-    public void prepare(Entity entity, Camera camera){
+    public void prepare(Entity entity, Camera camera) {
         shader.setUniform("textureSampler", 0);
         shader.setUniform("viewMatrix", Transformation.getViewMatrix(camera));
         entity.updateTransformMatrixes();
         shader.setUniform("transformationMatrix", entity.getTransformMatrixe());
     }
 
-    public void renderMaterial(Material material){
+    public void renderMaterial(Material material) {
         shader.setUniform("material", material);
     }
 
@@ -87,10 +91,10 @@ public class EntityRenderer implements IRenderer{
         renderLight(sunLights);
 
 
-        for(Model model : entities.keySet()){
+        for (Model model : entities.keySet()) {
             bind(model);
             List<Entity> entityList = entities.get(model);
-            for(Entity entity : entityList){
+            for (Entity entity : entityList) {
                 prepare(entity, camera);
                 renderMaterial(entity.getModel().getMaterial());
 
@@ -103,17 +107,16 @@ public class EntityRenderer implements IRenderer{
     }
 
     public void processEntities() {
-        for(Entity entity : entityList){
+        for (Entity entity : entityList) {
             processEntity(entity);
         }
     }
 
     private void processEntity(Entity entity) {
         List<Entity> entityList = entities.get(entity.getModel());
-        if (entityList != null){
+        if (entityList != null) {
             entityList.add(entity);
-        }
-        else{
+        } else {
             List<Entity> newEntityList = new ArrayList<>();
             newEntityList.add(entity);
             entities.put(entity.getModel(), newEntityList);
